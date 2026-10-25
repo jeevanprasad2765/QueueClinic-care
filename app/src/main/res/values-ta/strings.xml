@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">சேஃப்ரூட்</string>
+    <string name="tagline">செயற்கை நுண்ணறிவு பாதுகாப்பு வழிசெலுத்தல் மற்றும் அவசர உதவி</string>
+    <string name="home">முகப்பு</string>
+    <string name="navigate">வழிசெலுத்து</string>
+    <string name="history">வரலாறு</string>
+    <string name="profile">சுயவிவரம்</string>
+    <string name="emergency_sos">அவசர உதவி SOS</string>
+    <string name="starting_point">புறப்படும் இடம்</string>
+    <string name="destination">சேருமிடம் எங்கே?</string>
+    <string name="search_source_placeholder">புறப்படும் இடம் (எ.கா. பீளமேடு, எனது இடம்)</string>
+    <string name="search_destination_placeholder">கோவைக்குள் எங்கு செல்ல வேண்டும்? (எ.கா. டைடல் பார்க்)</string>
+    <string name="start_navigation">பாதுகாப்பான பயணத்தைத் தொடங்கு</string>
+    <string name="trip_completed">பாதுகாப்பாக பயணம் நிறைவடைந்தது</string>
+    <string name="select_language">மொழியைத் தேர்ந்தெடுக்கவும்</string>
+    <string name="language">மொழி / Language</string>
+</resources>

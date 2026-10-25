@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SafeRoute Firestore Blueprint",
+  "description": "Firestore schema for SafeRoute users and emergency data",
+  "entities": {
+    "User": {
+      "path": "users/{userId}",
+      "fields": {
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "language": { "type": "string" },
+        "safetyPreference": { "type": "string" },
+        "isPlusMember": { "type": "boolean" },
+        "emergencyContacts": { "type": "array" },
+        "savedPlaces": { "type": "array" },
+        "createdAt": { "type": "timestamp" },
+        "lastUpdated": { "type": "timestamp" }
+      },
+      "rules": "request.auth != null && request.auth.uid == userId"
+    }
+  }
+}

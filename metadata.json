@@ -1,0 +1,8 @@
+{
+  "name": "SafeRoute",
+  "description": "A navigation app providing safety-scored routes based on lighting, crowd density, and historical data for secure walking and commuting.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

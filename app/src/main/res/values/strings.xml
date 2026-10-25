@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">SafeRoute</string>
+    <string name="tagline">AI Safety-First Navigation &amp; Emergency Companion</string>
+    <string name="home">Home</string>
+    <string name="navigate">Navigate</string>
+    <string name="history">History</string>
+    <string name="profile">Profile</string>
+    <string name="emergency_sos">EMERGENCY SOS</string>
+    <string name="starting_point">Starting point</string>
+    <string name="destination">Where to?</string>
+    <string name="search_source_placeholder">Choose start (e.g. Peelamedu, My Location)</string>
+    <string name="search_destination_placeholder">Where to in Coimbatore? (e.g. TIDEL Park)</string>
+    <string name="start_navigation">START SAFE NAVIGATION</string>
+    <string name="trip_completed">Trip Safely Completed</string>
+    <string name="select_language">Select Language / மொழி</string>
+    <string name="language">Language / மொழி</string>
+</resources>

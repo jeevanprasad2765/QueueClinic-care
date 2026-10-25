@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SafeRoute Google Maps - Coimbatore</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body, #map {
+      width: 100%;
+      height: 100%;
+      background-color: #0e131f;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .custom-safety-marker {
+      background: rgba(14, 19, 31, 0.9);
+      border: 2px solid #00E676;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 10px rgba(0, 230, 118, 0.6);
+      color: #00E676;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    .custom-caution-marker {
+      background: rgba(14, 19, 31, 0.9);
+      border: 2px solid #FF5252;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 10px rgba(255, 82, 82, 0.6);
+      color: #FF5252;
+      font-size: 11px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script>
+    // Strict Geographic Boundaries (Coimbatore Only)
+    const COIMBATORE_BOUNDS = {
+      north: 11.1500, // Thudiyalur / Annur
+      south: 10.8800, // Eachanari / Malumichampatti
+      west: 76.8500,  // Vadavalli / Marudhamalai
+      east: 77.1000   // TIDEL Park / Sulur / Airport
+    };
+
+    const COIMBATORE_CENTER = { lat: 11.0168, lng: 76.9558 };
+
+    // Custom Dark "Night / Aubergine" Map Style
+    const AUBERGINE_NIGHT_STYLE = [
+      { elementType: "geometry", stylers: [{ color: "#161b26" }] },
+      { elementType: "labels.text.stroke", stylers: [{ color: "#0e131f" }] },
+      { elementType: "labels.text.fill", stylers: [{ color: "#8a9ba8" }] },
+      {
+        featureType: "administrative.locality",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#b0c4de" }]
+      },
+      {
+        featureType: "poi",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#6f9ba5" }]
+      },
+      {
+        featureType: "poi.park",
+        elementType: "geometry",
+        stylers: [{ color: "#152628" }]
+      },
+      {
+        featureType: "poi.park",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#4d736d" }]
+      },
+      {
+        featureType: "road",
+        elementType: "geometry",
+        stylers: [{ color: "#242f3e" }]
+      },
+      {
+        featureType: "road",
+        elementType: "geometry.stroke",
+        stylers: [{ color: "#1a222f" }]
+      },
+      {
+        featureType: "road",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#74889a" }]
+      },
+      {
+        featureType: "road.highway",
+        elementType: "geometry",
+        stylers: [{ color: "#2d3e58" }]
+      },
+      {
+        featureType: "road.highway",
+        elementType: "geometry.stroke",
+        stylers: [{ color: "#1b2535" }]
+      },
+      {
+        featureType: "road.highway",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#a5b9cc" }]
+      },
+      {
+        featureType: "transit",
+        elementType: "geometry",
+        stylers: [{ color: "#202a3a" }]
+      },
+      {
+        featureType: "water",
+        elementType: "geometry",
+        stylers: [{ color: "#101827" }]
+      },
+      {
+        featureType: "water",
+        elementType: "labels.text.fill",
+        stylers: [{ color: "#3e526a" }]
+      }
+    ];
+
+    let map = null;
+    let safeRoutePolyline = null;
+    let cautionRoutePolyline = null;
+    let routeMarkers = [];
+
+    function initMap() {
+      if (typeof google === "undefined" || !google.maps) {
+        console.warn("Google Maps JavaScript API not loaded yet.");
+        return;
+      }
+
+      // Initialize Google Map with strict restriction and disabled clutter controls
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: COIMBATORE_CENTER,
+        zoom: 13,
+        minZoom: 11,
+        maxZoom: 18,
+        styles: AUBERGINE_NIGHT_STYLE,
+        restriction: {
+          latLngBounds: COIMBATORE_BOUNDS,
+          strictBounds: true
+        },
+        disableDefaultUI: true,
+        streetViewControl: false,
+        mapTypeControl: false,
+        fullscreenControl: false,
+        zoomControl: true,
+        zoomControlOptions: {
+          position: google.maps.ControlPosition.RIGHT_BOTTOM
+        }
+      });
+
+      // Default Coimbatore Safe Corridor to TIDEL Park, Peelamedu
+      renderSafeCorridor([
+        { lat: 11.0089, lng: 76.9507 }, // RS Puram
+        { lat: 11.0150, lng: 76.9720 }, // Flyover Junction
+        { lat: 11.0185, lng: 76.9820 }, // Lakshmi Mills
+        { lat: 11.0210, lng: 76.9910 }, // Nava India
+        { lat: 11.0250, lng: 77.0080 }, // Peelamedu PSG Tech
+        { lat: 11.0270, lng: 77.0200 }, // Hope College
+        { lat: 11.0253, lng: 77.0345 }  // TIDEL Park Coimbatore
+      ]);
+    }
+
+    function renderSafeCorridor(coords, cautionCoords = []) {
+      if (!map || typeof google === "undefined") return;
+
+      // Clear existing polylines
+      if (safeRoutePolyline) safeRoutePolyline.setMap(null);
+      if (cautionRoutePolyline) cautionRoutePolyline.setMap(null);
+      routeMarkers.forEach(m => m.setMap(null));
+      routeMarkers = [];
+
+      // Safe Corridor Polyline (#00E676)
+      safeRoutePolyline = new google.maps.Polyline({
+        path: coords,
+        geodesic: true,
+        strokeColor: "#00E676",
+        strokeOpacity: 0.95,
+        strokeWeight: 6,
+        map: map
+      });
+
+      // Cautionary Segment Polyline (#FF5252) if present
+      if (cautionCoords && cautionCoords.length > 0) {
+        cautionRoutePolyline = new google.maps.Polyline({
+          path: cautionCoords,
+          geodesic: true,
+          strokeColor: "#FF5252",
+          strokeOpacity: 0.95,
+          strokeWeight: 5,
+          strokePattern: [10, 5],
+          map: map
+        });
+      }
+
+      // Add safety markers along route
+      if (coords.length > 0) {
+        // Origin Pulsing Dot
+        const startMarker = new google.maps.Marker({
+          position: coords[0],
+          map: map,
+          title: "My Location",
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 8,
+            fillColor: "#1A73E8",
+            fillOpacity: 1,
+            strokeColor: "#FFFFFF",
+            strokeWeight: 3
+          }
+        });
+        routeMarkers.push(startMarker);
+
+        // Destination Marker (TIDEL Park)
+        const endMarker = new google.maps.Marker({
+          position: coords[coords.length - 1],
+          map: map,
+          title: "Destination: TIDEL Park",
+          icon: {
+            path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+            scale: 6,
+            fillColor: "#00E676",
+            fillOpacity: 1,
+            strokeColor: "#0e131f",
+            strokeWeight: 2
+          }
+        });
+        routeMarkers.push(endMarker);
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", initMap);
+  </script>
+</body>
+</html>
